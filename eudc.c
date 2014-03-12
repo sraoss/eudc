@@ -106,13 +106,17 @@ static bool eudc_fallback_character_check_hook(
 
 	GUC_check_errhint("must be one character or empty string");
 
-	if (! newval)
-		return false;
-	if (! (*newval))
-		return true;
-	len = pg_mbstrlen(*newval);
-	if (len >= 2)
-		return false;
+	/* handle explicit setting of eudc.fallback_character */
+	if (*newval)
+	{
+		/* eudc.fallback_character
+		 * should be 0 or 1 character
+		 */
+		len = pg_mbstrlen(*newval);
+		if (len >= 2 || len < 0)
+			return false;
+	}
+
 	return true;
 }
 
@@ -124,7 +128,7 @@ eudc_fallback_character_assign_hook(
 {
 	int		len = pg_mbstrlen(newval);
 
-	if (len >= 2)
+	if (len >= 2 || len < 0)
 		ereport(ERROR,
 			(errcode(ERRCODE_INVALID_PARAMETER_VALUE),
 			 errmsg("invalid value for parameter \"eudc.fallback_character\": \"%s\"", newval),
