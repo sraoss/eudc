@@ -1,0 +1,6 @@
+# eudc_drop extension
+comment = 'To drop eudc & restore default encoding in PostgreSQL'
+default_version = '1.0'
+module_pathname = '$libdir/eudc_drop'
+relocatable = false
+schema = public

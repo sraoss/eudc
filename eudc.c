@@ -25,13 +25,30 @@ static const struct config_enum_entry log_level_options[] = {
 	{NULL, 0, false}
 };
 
+#if PG_VERSION_NUM >= 90100
+char   *eudc_fallback_character = "";
+#else
 char   *eudc_fallback_character = NULL;
+#endif
+
 int		eudc_log_level = DEBUG2;
 
 extern void PGDLLEXPORT _PG_init(void);
 
+#if PG_VERSION_NUM >= 90100
+static bool eudc_fallback_character_check_hook(
+	const char **newval, void** extra, GucSource source);
+
+static const char *eudc_fallback_character_assign_hook(
+	const char *newval, void* extra);
+
+#else
+
 static const char *eudc_fallback_character_assign_hook(
 	const char *newval, bool doit, GucSource source);
+
+#endif
+
 
 void
 _PG_init(void)
@@ -44,7 +61,12 @@ _PG_init(void)
 							   NULL,
 							   PGC_USERSET,
 							   0,
+#if PG_VERSION_NUM >= 90100
+							   (GucStringCheckHook)&eudc_fallback_character_check_hook,
+							   (GucStringAssignHook)&eudc_fallback_character_assign_hook,
+#else
 							   eudc_fallback_character_assign_hook,
+#endif
 							   NULL);
 
 #if PG_VERSION_NUM >= 80400
@@ -56,12 +78,45 @@ _PG_init(void)
 							 log_level_options,
 							 PGC_USERSET,
 							 0,
+#if PG_VERSION_NUM >= 90100
+							 NULL,
+#endif
 							 NULL,
 							 NULL);
 #endif
 
 	EmitWarningsOnPlaceholders("eudc");
 }
+
+
+
+#if PG_VERSION_NUM >= 90100
+
+static const char *
+eudc_fallback_character_assign_hook(
+	const char *newval, void* extra)
+{
+	return newval;
+}
+
+static bool eudc_fallback_character_check_hook(
+	const char **newval, void** extra, GucSource source)
+{
+	int		len;
+
+	GUC_check_errhint("must be one character or empty string");
+
+	if (! newval)
+		return false;
+	if (! (*newval))
+		return true;
+	len = pg_mbstrlen(*newval);
+	if (len >= 2)
+		return false;
+	return true;
+}
+
+#else
 
 static const char *
 eudc_fallback_character_assign_hook(
@@ -77,3 +132,5 @@ eudc_fallback_character_assign_hook(
 
 	return newval;
 }
+
+#endif

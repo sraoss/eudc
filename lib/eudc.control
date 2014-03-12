@@ -1,0 +1,6 @@
+# eudc extension
+comment = 'eudc is user define character encoding tool for PostgreSQL'
+default_version = '1.0'
+module_pathname = '$libdir/eudc'
+relocatable = false
+schema = public

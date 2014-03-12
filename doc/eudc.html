@@ -65,6 +65,51 @@ UTF-8 と SJIS とのマッピングは Windows での外字のマッピング�
 外字の単純な保存、検索、取得で十分な場合にご利用ください。
 </p>
 
+<h2>ソースコードからのインストール</h2>
+<pre>
+$ make
+$ su
+$ make install 
+</pre>
+
+<p>eudc用の関数をデータベースに登録します。</p>
+<pre>
+$ psql -f $POSTGRES/share/contrib/eudc.sql <database_name>
+</pre>
+<p>アンインストール時は、uninstall_eudc.sqlを同様の手順で実行してください。</p>
+<p>PostgreSQL 9.1以降では、CREATE EXTENSION文を用いた登録も可能です。ただし、CREATE EXTENSION文はDBスーパーユーザにて実行してください。</p>
+<pre>
+$ psql -Upostgres <database_name>
+database_name=# CREATE EXTENSION eudc;
+</pre>
+<p style="color:red">注意</p>
+<p>CREATE EXTENSIONにて登録した場合、アンインストールする際にDROP EXTENSIONしないでください。元々の文字コード変換関数がデフォルト設定に戻らないため暗黙的な文字コード変換が行われなくなってしまいます。アンインストールには、eudc_drop エクステンションを用いて下さい。</p>
+<pre>
+database_name=# CREATE EXTENSION eudc_drop;
+</pre>
+
+<h2>関数</h2>
+<p>eudcは下記の関数を導入します。</p>
+<ul>
+  <li>sjis_eudc_to_utf8 : SJISからUTF-8に外字領域を含めた変換を行います</li>
+  <li>utf8_to_sjis_eudc : UTF-8からSJISに外字領域を含めた変換を行います</li>
+  <li>euc_jp_eudc_to_utf8 : EUC_JPからUTF-8に外字領域を含めた変換を行います</li>
+  <li>utf8_to_euc_jp_eudc : UTF-8からEUC_JPに外字領域を含めた変換を行います</li>
+</ul>
+<p>デフォルトの文字コード変換関数として登録されるため、convert()関数にて自動的に呼ばれるようになります。</p>
+
+<p>上記の関数が正しく設定されているかどうか確認するには以下の関数を実行してください</p>
+<pre>
+database_name=# SELECT * FROM show_eudc();
+ Conversion Function | Source | Destination | Is Default?
+---------------------+--------+-------------+-------------
+ sjis_eudc_to_utf8   | SJIS   | UTF8        | yes
+ utf8_to_sjis_eudc   | UTF8   | SJIS        | yes
+ euc_jp_eudc_to_utf8 | EUC_JP | UTF8        | yes
+ utf8_to_euc_jp_eudc | UTF8   | EUC_JP      | yes
+(4 rows)
+</pre>
+
 <h2>設定パラメータ</h2>
 <dl>
 <dt>eudc.fallback_character</dt>
@@ -100,9 +145,17 @@ eudc.fallback_character = '〓'   # すべての EUDC はゲタに変換する
 eudc.log_level = warning
 </pre>
 
+<h2 id="requirement">動作環境</h2>
+<dl>
+<dt>PostgreSQLバージョン</dt>
+<dd>PostgreSQL 8.4, 9.0, 9.1, 9.2, 9.3</dd>
+<dt>OS</dt>
+<dd>RHEL 5/6</dd>
+</dl>
+
 <hr />
 <div class="navigation"><a href="index-ja.html">Top</a> &gt; <a href="eudc.html">eudc</a><div>
-<p class="footer">Copyright (c) 2010, NIPPON TELEGRAPH AND TELEPHONE CORPORATION</p>
+<p class="footer">Copyright (c) 2014, NIPPON TELEGRAPH AND TELEPHONE CORPORATION</p>
 
 <script type="text/javascript">
 var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
