@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<head>
+	<link rel="icon" type="image/png" href="http://pgfoundry.org/images/elephant-icon.png" />
+	<link rel="stylesheet" type="text/css" href="style.css" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>EUDC</title>
+</head>
+
+<body>
+<center>
+<h1>EUDC (End User Defined Character) : 外字対応文字コード</h1>
+</center>
+<div class="navigation">
+<a href="index-ja.html">Top</a> &gt;
+<a href="eudc.html">eudc</a>
+<div>
+<hr />
+
+<p>
+<a href="eudc.html">eudc</a> モジュールは、外字領域の文字コード変換をサポートしたエンコーディングです。
+シフトSJIS (SJIS) や EUC_JP と、UTF-8 の変換において、外字領域の変換を追加します。
+絵文字等の外字を扱う必要があり、かつクライアント・アプリケーションとデータベースで異なる文字コードを使う場合に有用です。
+eudc を導入すると、以下の相互変換が可能になります。
+</p>
+
+
+<h2>外字のマッピング規則</h2>
+<table>
+<thead>
+  <tr>
+    <th>エンコード 1</th>
+    <th>エンコード 2</th>
+    <th>特記事項</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td>UTF-8<br />E000 - E757</td>
+    <td>SJIS<br />F040 - F9FF</td>
+    <td>利用可能なコード領域を線形に対応</td>
+  </tr>
+  <tr>
+    <td>UTF-8<br />E000 - E3AB, E3AC - E757</td>
+    <td>EUC_JP<br />F5A1 - FEFE, 8FF5A1 - 8FFEFE</td>
+    <td>利用可能なコード領域を線形に対応</td>
+  </tr>
+  <tr>
+    <td>SJIS<br />F040 - F9FF</td>
+    <td>EUC_JP<br />F5A1 - FEFE, 8FF5A1 - 8FFEFE</td>
+    <td>eudc を導入しなくても変換可能</td>
+  </tr>
+</tbody>
+</table>
+
+<p>
+UTF-8 と SJIS とのマッピングは Windows での外字のマッピングと一致させています。
+</p>
+<p>
+単純な線形マッピングを行いますので、例えば字形に合わせた独自にマッピングが必要な場合には対応できません。
+外字の単純な保存、検索、取得で十分な場合にご利用ください。
+</p>
+
+<h2>設定パラメータ</h2>
+<dl>
+<dt>eudc.fallback_character</dt>
+<dd>
+外字を変換する際に、常に特定の文字にマッピングする場合に、その文字を指定します。
+指定する文字はマルチバイト文字でも構いませんが、1文字である必要があります。
+デフォルトは空文字で、特定の文字にマッピングするのではなく、外字領域のコードを線形にマッピングします。
+</dd>
+<dd>
+<strong>[注意]</strong>
+このパラメータは動的に変更できますが、サービス開始後に変更すると検索結果の整合性無くなる可能性があります。
+設定値の変更前と変更後で実際にデータベースで扱う文字が変化するため、同一の問合せであっても同一の結果が返却されなくなる可能性があります。
+</dd>
+<dt>eudc.log_level</dt>
+<dd>
+バージョン 8.4 以降でのみ利用できます。
+外字を変換した際にログに出力するメッセージのレベルを指定します。
+有効な値は DEBUG5, DEBUG4, DEBUG3, DEBUG2, DEBUG1, LOG, NOTICE, WARNING, ERROR, FATAL です。
+デフォルトは DEBUG2 です。
+出力されるログの例を以下に示します。
+<pre>eudc character found: f040 in SJIS to UTF8 conversion</pre>
+</dd>
+</dl>
+
+<p>
+これらのパラメータは postgresql.conf で指定することもできますが、その際には <code>custom_variable_classes</code> にも 'eudc' を追加する必要があります。
+設定例を以下に示します。
+</p>
+
+<pre># postgresql.conf
+custom_variable_classes = 'eudc' # list of custom variable class names
+eudc.fallback_character = '〓'   # すべての EUDC はゲタに変換する
+eudc.log_level = warning
+</pre>
+
+<hr />
+<div class="navigation"><a href="index-ja.html">Top</a> &gt; <a href="eudc.html">eudc</a><div>
+<p class="footer">Copyright (c) 2010, NIPPON TELEGRAPH AND TELEPHONE CORPORATION</p>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10244036-3");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+SET client_min_messages = warning;
+\set ECHO none
+RESET client_min_messages;
+CREATE DATABASE contrib_regression_utf8 TEMPLATE template0 ENCODING 'utf8';
+\connect contrib_regression_utf8
+\set ECHO none
+CREATE TABLE foo(str text);
+SET client_encoding = SJIS;
+\copy foo FROM 'data/sjis.csv' WITH CSV
+\copy foo TO 'results/sjis.csv' WITH CSV
+\! diff data/sjis.csv results/sjis.csv
+SELECT encode(str::bytea, 'hex') FROM foo;
+                                                                                                          encode                                                                                                          
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ efbca1efbca2efbca3ee8080ee8081ee8082efbd81efbd82efbd83ee80beee80bfee8180efbc90efbc91efbc92ee82bbee82bcee82bde38182e38184e38186ee81bfee8280ee8281e382a2e382a4e382a6ee82bfee8380ee8381e4ba9ce59496e5a883ee9d95ee9d96ee9d97
+(1 row)
+

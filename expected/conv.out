@@ -1,0 +1,114 @@
+-- SJIS to UTF8 and EUC_JP
+CREATE TABLE sjis (sjis text, utf8 text, euc_jp text);
+INSERT INTO sjis SELECT i,
+       encode(convert(decode(i, 'hex'), 'SJIS', 'UTF8'), 'hex'),
+       encode(convert(decode(i, 'hex'), 'SJIS', 'EUC_JP'), 'hex')
+  FROM (VALUES ('8476'),
+               ('82a0'),
+               ('f040'),
+               ('f1fc'),
+               ('f38d'),
+               ('f39e'),
+               ('f39f'),
+               ('f4fc'),
+               ('f540'),
+               ('f9fc')) AS t(i)
+  RETURNING *;
+ sjis |  utf8  | euc_jp 
+------+--------+--------
+ 8476 | d191   | a7d7
+ 82a0 | e38182 | a4a2
+ f040 | ee8080 | f5a1
+ f1fc | ee85b7 | f8fe
+ f38d | ee8a80 | fbed
+ f39e | ee8a91 | fbfe
+ f39f | ee8a92 | fca1
+ f4fc | ee8eab | fefe
+ f540 | ee8eac | 8ff5a1
+ f9fc | ee9d97 | 8ffefe
+(10 rows)
+
+-- UTF8 to SJIS and EUC_JP
+CREATE TABLE utf8 (utf8 text, sjis text, euc_jp text);
+INSERT INTO utf8 SELECT i,
+       encode(convert(decode(i, 'hex'), 'UTF8', 'SJIS'), 'hex') AS sjis,
+       encode(convert(decode(i, 'hex'), 'UTF8', 'EUC_JP'), 'hex') AS euc_jp
+  FROM (VALUES ('d191'),
+               ('e38182'),
+               ('ee8080'),
+               ('ee85b7'),
+               ('ee8a80'),
+               ('ee8a91'),
+               ('ee8a92'),
+               ('ee8eab'),
+               ('ee8eac'),
+               ('ee9d97')) AS t(i)
+  RETURNING *;
+  utf8  | sjis | euc_jp 
+--------+------+--------
+ d191   | 8476 | a7d7
+ e38182 | 82a0 | a4a2
+ ee8080 | f040 | f5a1
+ ee85b7 | f1fc | f8fe
+ ee8a80 | f38d | fbed
+ ee8a91 | f39e | fbfe
+ ee8a92 | f39f | fca1
+ ee8eab | f4fc | fefe
+ ee8eac | f540 | 8ff5a1
+ ee9d97 | f9fc | 8ffefe
+(10 rows)
+
+-- EUC_JP to UTF8 and SJIS
+CREATE TABLE euc_jp (euc_jp text, utf8 text, sjis text);
+INSERT INTO euc_jp SELECT i,
+       encode(convert(decode(i, 'hex'), 'EUC_JP', 'UTF8'), 'hex'),
+       encode(convert(decode(i, 'hex'), 'EUC_JP', 'SJIS'), 'hex')
+  FROM (VALUES ('a7d7'),
+               ('a4a2'),
+               ('f5a1'),
+               ('f8fe'),
+               ('fbed'),
+               ('fbfe'),
+               ('fca1'),
+               ('fefe'),
+               ('8ff5a1'),
+               ('8ffefe')) AS t(i)
+  RETURNING *;
+ euc_jp |  utf8  | sjis 
+--------+--------+------
+ a7d7   | d191   | 8476
+ a4a2   | e38182 | 82a0
+ f5a1   | ee8080 | f040
+ f8fe   | ee85b7 | f1fc
+ fbed   | ee8a80 | f38d
+ fbfe   | ee8a91 | f39e
+ fca1   | ee8a92 | f39f
+ fefe   | ee8eab | f4fc
+ 8ff5a1 | ee8eac | f540
+ 8ffefe | ee9d97 | f9fc
+(10 rows)
+
+-- sanity check
+SELECT * FROM sjis AS s FULL JOIN utf8 AS u ON s.utf8 = u.utf8
+ WHERE s.sjis <> u.sjis OR s.euc_jp <> u.euc_jp;
+ sjis | utf8 | euc_jp | utf8 | sjis | euc_jp 
+------+------+--------+------+------+--------
+(0 rows)
+
+SELECT * FROM euc_jp AS e FULL JOIN utf8 AS u ON e.utf8 = u.utf8
+ WHERE e.sjis <> u.sjis OR e.euc_jp <> u.euc_jp;
+ euc_jp | utf8 | sjis | utf8 | sjis | euc_jp 
+--------+------+------+------+------+--------
+(0 rows)
+
+SELECT * FROM sjis AS s FULL JOIN euc_jp AS e ON s.utf8 = e.utf8
+ WHERE s.sjis <> e.sjis OR s.euc_jp <> e.euc_jp;
+ sjis | utf8 | euc_jp | euc_jp | utf8 | sjis 
+------+------+--------+--------+------+------
+(0 rows)
+
+-- error cases
+SELECT encode(convert(decode('ee9d98', 'hex'), 'UTF8', 'SJIS'), 'hex');
+ERROR:  character 0xee9d98 of encoding "UTF8" has no equivalent in "SJIS"
+SELECT encode(convert(decode('ee9d98', 'hex'), 'UTF8', 'EUC_JP'), 'hex');
+ERROR:  character 0xee9d98 of encoding "UTF8" has no equivalent in "EUC_JP"

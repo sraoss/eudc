@@ -1,0 +1,134 @@
+LOAD 'eudc';
+SET client_encoding = 'UTF8';
+SET eudc.fallback_character = '〓';
+SET eudc.log_level = 'info';
+SELECT encode(convert('〓', 'UTF8', 'UTF8'), 'hex') AS utf8,
+       encode(convert('〓', 'UTF8', 'SJIS'), 'hex') AS sjis,
+       encode(convert('〓', 'UTF8', 'EUC_JP'), 'hex') AS euc_jp;
+  utf8  | sjis | euc_jp 
+--------+------+--------
+ e38093 | 81ac | a2ae
+(1 row)
+
+SELECT i,
+       encode(convert(decode(i, 'hex'), 'SJIS', 'UTF8'), 'hex') AS utf8,
+       encode(convert(decode(i, 'hex'), 'SJIS', 'EUC_JP'), 'hex') AS euc_jp
+  FROM (VALUES ('8476'),
+               ('82a0'),
+               ('f040'),
+               ('f1fc'),
+               ('f38d'),
+               ('f39e'),
+               ('f39f'),
+               ('f4fc'),
+               ('f540'),
+               ('f9fc')) AS t(i);
+INFO:  eudc character found: f040 in SJIS to UTF8 conversion
+INFO:  eudc character found: f1fc in SJIS to UTF8 conversion
+INFO:  eudc character found: f38d in SJIS to UTF8 conversion
+INFO:  eudc character found: f39e in SJIS to UTF8 conversion
+INFO:  eudc character found: f39f in SJIS to UTF8 conversion
+INFO:  eudc character found: f4fc in SJIS to UTF8 conversion
+INFO:  eudc character found: f540 in SJIS to UTF8 conversion
+INFO:  eudc character found: f9fc in SJIS to UTF8 conversion
+  i   |  utf8  | euc_jp 
+------+--------+--------
+ 8476 | d191   | a7d7
+ 82a0 | e38182 | a4a2
+ f040 | e38093 | f5a1
+ f1fc | e38093 | f8fe
+ f38d | e38093 | fbed
+ f39e | e38093 | fbfe
+ f39f | e38093 | fca1
+ f4fc | e38093 | fefe
+ f540 | e38093 | 8ff5a1
+ f9fc | e38093 | 8ffefe
+(10 rows)
+
+SELECT i,
+       encode(convert(decode(i, 'hex'), 'UTF8', 'SJIS'), 'hex') AS sjis,
+       encode(convert(decode(i, 'hex'), 'UTF8', 'EUC_JP'), 'hex') AS euc_jp
+  FROM (VALUES ('d191'),
+               ('e38182'),
+               ('ee8080'),
+               ('ee85b7'),
+               ('ee8a80'),
+               ('ee8a91'),
+               ('ee8a92'),
+               ('ee8eab'),
+               ('ee8eac'),
+               ('ee9d97')) AS t(i);
+INFO:  eudc character found: ee8080 in UTF8 to SJIS conversion
+INFO:  eudc character found: ee8080 in UTF8 to EUC_JP conversion
+INFO:  eudc character found: ee85b7 in UTF8 to SJIS conversion
+INFO:  eudc character found: ee85b7 in UTF8 to EUC_JP conversion
+INFO:  eudc character found: ee8a80 in UTF8 to SJIS conversion
+INFO:  eudc character found: ee8a80 in UTF8 to EUC_JP conversion
+INFO:  eudc character found: ee8a91 in UTF8 to SJIS conversion
+INFO:  eudc character found: ee8a91 in UTF8 to EUC_JP conversion
+INFO:  eudc character found: ee8a92 in UTF8 to SJIS conversion
+INFO:  eudc character found: ee8a92 in UTF8 to EUC_JP conversion
+INFO:  eudc character found: ee8eab in UTF8 to SJIS conversion
+INFO:  eudc character found: ee8eab in UTF8 to EUC_JP conversion
+INFO:  eudc character found: ee8eac in UTF8 to SJIS conversion
+INFO:  eudc character found: ee8eac in UTF8 to EUC_JP conversion
+INFO:  eudc character found: ee9d97 in UTF8 to SJIS conversion
+INFO:  eudc character found: ee9d97 in UTF8 to EUC_JP conversion
+   i    | sjis | euc_jp 
+--------+------+--------
+ d191   | 8476 | a7d7
+ e38182 | 82a0 | a4a2
+ ee8080 | 81ac | a2ae
+ ee85b7 | 81ac | a2ae
+ ee8a80 | 81ac | a2ae
+ ee8a91 | 81ac | a2ae
+ ee8a92 | 81ac | a2ae
+ ee8eab | 81ac | a2ae
+ ee8eac | 81ac | a2ae
+ ee9d97 | 81ac | a2ae
+(10 rows)
+
+SELECT i,
+       encode(convert(decode(i, 'hex'), 'EUC_JP', 'UTF8'), 'hex') AS utf8,
+       encode(convert(decode(i, 'hex'), 'EUC_JP', 'SJIS'), 'hex') AS sjis
+  FROM (VALUES ('a7d7'),
+               ('a4a2'),
+               ('f5a1'),
+               ('f8fe'),
+               ('fbed'),
+               ('fbfe'),
+               ('fca1'),
+               ('fefe'),
+               ('8ff5a1'),
+               ('8ffefe')) AS t(i);
+INFO:  eudc character found: f5a1 in EUC_JP to UTF8 conversion
+INFO:  eudc character found: f8fe in EUC_JP to UTF8 conversion
+INFO:  eudc character found: fbed in EUC_JP to UTF8 conversion
+INFO:  eudc character found: fbfe in EUC_JP to UTF8 conversion
+INFO:  eudc character found: fca1 in EUC_JP to UTF8 conversion
+INFO:  eudc character found: fefe in EUC_JP to UTF8 conversion
+INFO:  eudc character found: 8ff5a1 in EUC_JP to UTF8 conversion
+INFO:  eudc character found: 8ffefe in EUC_JP to UTF8 conversion
+   i    |  utf8  | sjis 
+--------+--------+------
+ a7d7   | d191   | 8476
+ a4a2   | e38182 | 82a0
+ f5a1   | e38093 | f040
+ f8fe   | e38093 | f1fc
+ fbed   | e38093 | f38d
+ fbfe   | e38093 | f39e
+ fca1   | e38093 | f39f
+ fefe   | e38093 | f4fc
+ 8ff5a1 | e38093 | f540
+ 8ffefe | e38093 | f9fc
+(10 rows)
+
+RESET eudc.fallback_character;
+RESET eudc.log_level;
+-- bad configuration
+SET eudc.fallback_character = 'two or more characters';
+ERROR:  invalid value for parameter "eudc.fallback_character": "two or more characters"
+HINT:  must be one character or empty string
+SET eudc.log_level = 'panic';
+ERROR:  invalid value for parameter "eudc.log_level": "panic"
+HINT:  Available values: debug5, debug4, debug3, debug2, debug1, log, notice, warning, error.
