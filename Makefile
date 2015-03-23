@@ -59,11 +59,13 @@ expected/conv-9.2.out:
 	cp expected/conv-extension.out expected/conv-9.2.out
 expected/conv-9.3.out:
 	cp expected/conv-extension.out expected/conv-9.3.out
+expected/conv-9.4.out:
+	cp expected/conv-extension.out expected/conv-9.4.out
 
 .PHONY: subclean
 clean: subclean
 
 subclean:
-	rm -f expected/conv.out expected/conv-{8.4,9.0,9.1,9.2,9.3}.out
+	rm -f expected/conv.out expected/conv-{8.4,9.0,9.1,9.2,9.3,9.4}.out
 
 installcheck: expected/conv.out
