@@ -44,7 +44,7 @@ sjis_eudc_to_utf8(PG_FUNCTION_ARGS)
 	int			clen;
 #if PG_VERSION_NUM >= 140000
 	bool		ignorefail = PG_GETARG_BOOL(5);
-	int			converted = 0;
+	int 		converted;
 #endif
 
 	CHECK_ENCODING_CONVERSION_ARGS(PG_SJIS, PG_UTF8);
@@ -171,7 +171,7 @@ utf8_to_sjis_eudc(PG_FUNCTION_ARGS)
 	int			clen;
 #if PG_VERSION_NUM >= 140000
 	bool		ignorefail = PG_GETARG_BOOL(5);
-	int			converted = 0;
+	int			converted;
 #endif
 
 	CHECK_ENCODING_CONVERSION_ARGS(PG_UTF8, PG_SJIS);
@@ -275,7 +275,7 @@ utf8_to_sjis_eudc(PG_FUNCTION_ARGS)
 	/* UTF8 to SJIS */
 	if (utf8_len > 0)
 #if PG_VERSION_NUM >= 140000
-		converted = DirectFunctionCall6(utf8_to_sjis, PG_UTF8, PG_SJIS,
+		DirectFunctionCall6(utf8_to_sjis, PG_UTF8, PG_SJIS,
 							CStringGetDatum(p), CStringGetDatum(dest),
 							utf8_len, ignorefail);
 #else

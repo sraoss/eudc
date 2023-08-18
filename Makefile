@@ -13,7 +13,7 @@ REGRESS = init conv copy fallback
 EXTENSION = lib/eudc
 
 #supports both EXTENSION and without_EXTENSION
-DATA_built = eudc.sql lib/eudc--1.0.sql
+DATA_built = eudc.sql lib/eudc--2.0.sql
 
 ifndef USE_PGXS
 top_builddir = ../..
@@ -43,9 +43,9 @@ ifndef MAJORVERSION
 MAJORVERSION := $(basename $(VERSION))
 endif
 
-lib/eudc--1.0.sql: lib/eudc--1.0.sql.in
-	(test $(MAJORVERSION) -lt 14 && sed -e 's/RETURN_TYPE/void/g' lib/eudc--1.0.sql.in > lib/eudc--1.0.sql) || \
-	test $(MAJORVERSION) -ge 14 && sed -e 's/RETURN_TYPE/int/g' lib/eudc--1.0.sql.in > lib/eudc--1.0.sql
+lib/eudc--2.0.sql: lib/eudc--2.0.sql.in
+	(test $(MAJORVERSION) -lt 14 && sed -e 's/RETURN_TYPE/void/g' lib/eudc--2.0.sql.in > lib/eudc--2.0.sql) || \
+	test $(MAJORVERSION) -ge 14 && sed -e 's/RETURN_TYPE/int/g' lib/eudc--2.0.sql.in > lib/eudc--2.0.sql
 
 eudc.sql: eudc.sql.in
 	(test $(MAJORVERSION) -lt 14 && sed -e 's/RETURN_TYPE/void/g' eudc.sql.in > eudc.sql) || \

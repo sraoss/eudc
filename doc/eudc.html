@@ -77,15 +77,15 @@ $ make install
 $ psql -f $POSTGRES/share/contrib/eudc.sql <database_name>
 </pre>
 <p>アンインストール時は、uninstall_eudc.sqlを同様の手順で実行してください。</p>
-<p>PostgreSQL 9.1以降では、CREATE EXTENSION文を用いた登録も可能です。ただし、CREATE EXTENSION文はDBスーパーユーザにて実行してください。</p>
+<p>CREATE EXTENSION文を用いた登録も可能です。いずれの場合も、DBスーパーユーザにて実行してください。</p>
 <pre>
 $ psql -Upostgres <database_name>
 database_name=# CREATE EXTENSION eudc;
 </pre>
 <p style="color:red">注意</p>
-<p>CREATE EXTENSIONにて登録した場合、アンインストールする際にDROP EXTENSIONしないでください。元々の文字コード変換関数がデフォルト設定に戻らないため暗黙的な文字コード変換が行われなくなってしまいます。アンインストールには、eudc_drop エクステンションを用いて下さい。</p>
+<p>CREATE EXTENSION にて登録した場合、アンインストールする際に DROP EXTENSION の前に SELECT disable_eudc(); を忘れずに実行してください。元々の文字コード変換関数がデフォルト設定に戻らないため暗黙的な文字コード変換が行われなくなってしまいます。</p>
 <pre>
-database_name=# CREATE EXTENSION eudc_drop;
+database_name=# SELECT disable_eudc(); DROP EXTENSION eudc;
 </pre>
 
 <h2>関数</h2>
@@ -96,9 +96,12 @@ database_name=# CREATE EXTENSION eudc_drop;
   <li>euc_jp_eudc_to_utf8 : EUC_JPからUTF-8に外字領域を含めた変換を行います</li>
   <li>utf8_to_euc_jp_eudc : UTF-8からEUC_JPに外字領域を含めた変換を行います</li>
 </ul>
-<p>デフォルトの文字コード変換関数として登録されるため、convert()関数にて自動的に呼ばれるようになります。</p>
-
-<p>上記の関数が正しく設定されているかどうか確認するには以下の関数を実行してください</p>
+<p>以下の関数で、これらをデフォルトの変換として使用するかを切り替えできます。</p>
+<pre>
+database_name=# SELECT enable_eudc();
+database_name=# SELECT disable_eudc();
+</pre>
+<p>eudcによる変換がデフォルトであるか確認するには以下の関数を実行してください</p>
 <pre>
 database_name=# SELECT * FROM show_eudc();
  Conversion Function | Source | Destination | Is Default?
@@ -135,12 +138,11 @@ database_name=# SELECT * FROM show_eudc();
 </dl>
 
 <p>
-これらのパラメータは postgresql.conf で指定することもできますが、その際には <code>custom_variable_classes</code> にも 'eudc' を追加する必要があります。
+これらのパラメータは postgresql.conf で指定することもできます。
 設定例を以下に示します。
 </p>
 
 <pre># postgresql.conf
-custom_variable_classes = 'eudc' # list of custom variable class names
 eudc.fallback_character = '〓'   # すべての EUDC はゲタに変換する
 eudc.log_level = warning
 </pre>
@@ -148,14 +150,21 @@ eudc.log_level = warning
 <h2 id="requirement">動作環境</h2>
 <dl>
 <dt>PostgreSQLバージョン</dt>
-<dd>PostgreSQL 8.4, 9.0, 9.1, 9.2, 9.3</dd>
-<dt>OS</dt>
-<dd>RHEL 5/6</dd>
+<dd>PostgreSQL 11, 12, 13, 14, 15</dd>
 </dl>
+
+<h2 id="version">バージョン2.0について</h2>
+
+<p>
+eudc バージョン 2.0 以降は バージョン 1.x までとは拡張の構成を大幅に変えています。
+そのため、既にバージョン 1.x を導入している環境で、バージョン 2.x を導入するには、バージョン 1.x のアンインストール手順を実行後、
+バージョン 2.x のインストールを行う必要があります。
+</p>
 
 <hr />
 <div class="navigation"><a href="index-ja.html">Top</a> &gt; <a href="eudc.html">eudc</a><div>
 <p class="footer">Copyright (c) 2014, NIPPON TELEGRAPH AND TELEPHONE CORPORATION</p>
+<p class="footer">Copyright (c) 2022, SRA OSS LLC</p>
 
 <script type="text/javascript">
 var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");

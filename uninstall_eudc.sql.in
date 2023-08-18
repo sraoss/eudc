@@ -1,0 +1,19 @@
+
+SELECT pg_catalog.disable_eudc();
+
+DROP CONVERSION pg_catalog.sjis_eudc_to_utf8;
+DROP FUNCTION pg_catalog.sjis_eudc_to_utf8;
+
+DROP CONVERSION pg_catalog.utf8_to_sjis_eudc;
+DROP FUNCTION pg_catalog.utf8_to_sjis_eudc;
+
+DROP CONVERSION pg_catalog.euc_jp_eudc_to_utf8;
+DROP FUNCTION pg_catalog.euc_jp_eudc_to_utf8;
+
+DROP CONVERSION pg_catalog.utf8_to_euc_jp_eudc;
+DROP FUNCTION pg_catalog.utf8_to_euc_jp_eudc;
+
+DROP FUNCTION pg_catalog.show_eudc;
+DROP FUNCTION pg_catalog.enable_eudc;
+DROP FUNCTION pg_catalog.disable_eudc;
+

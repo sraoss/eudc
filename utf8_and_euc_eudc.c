@@ -60,7 +60,7 @@ euc_jp_eudc_to_utf8(PG_FUNCTION_ARGS)
 	int			clen;
 #if PG_VERSION_NUM >= 140000
 	bool		ignorefail = PG_GETARG_BOOL(5);
-	int			converted = 0;
+	int 		converted;
 #endif
 
 	CHECK_ENCODING_CONVERSION_ARGS(PG_EUC_JP, PG_UTF8);
@@ -198,7 +198,7 @@ utf8_to_euc_jp_eudc(PG_FUNCTION_ARGS)
 	int			clen;
 #if PG_VERSION_NUM >= 140000
 	bool		ignorefail = PG_GETARG_BOOL(5);
-	int			converted = 0;
+	int 		converted;
 #endif
 
 
@@ -313,7 +313,7 @@ utf8_to_euc_jp_eudc(PG_FUNCTION_ARGS)
 	/* UTF8 to EUC_JP */
 	if (utf8_len > 0)
 #if PG_VERSION_NUM >= 140000
-		converted = DirectFunctionCall6(utf8_to_euc_jp, PG_UTF8, PG_EUC_JP,
+		DirectFunctionCall6(utf8_to_euc_jp, PG_UTF8, PG_EUC_JP,
 							CStringGetDatum(p), CStringGetDatum(dest),
 							utf8_len, ignorefail);
 #else
