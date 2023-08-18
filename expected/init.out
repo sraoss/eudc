@@ -4,4 +4,9 @@
 --
 SET client_min_messages = warning;
 \set ECHO none
+ enable_eudc 
+-------------
+ 
+(1 row)
+
 RESET client_min_messages;

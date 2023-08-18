@@ -4,6 +4,11 @@ RESET client_min_messages;
 CREATE DATABASE contrib_regression_utf8 TEMPLATE template0 ENCODING 'utf8';
 \connect contrib_regression_utf8
 \set ECHO none
+ enable_eudc 
+-------------
+ 
+(1 row)
+
 CREATE TABLE foo(str text);
 SET client_encoding = SJIS;
 \copy foo FROM 'data/sjis.csv' WITH CSV

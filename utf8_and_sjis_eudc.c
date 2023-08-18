@@ -28,7 +28,8 @@ extern Datum PGDLLEXPORT utf8_to_sjis_eudc(PG_FUNCTION_ARGS);
  *		CSTRING,	-- source string (null terminated C string)
  *		CSTRING,	-- destination string (null terminated C string)
  *		INTEGER		-- source string length
- * ) returns VOID;
+ *		boolean     -- ignore failure (only in V14 and newer)
+ * ) returns int;   -- source string length (void on V13 and older)
  * ----------
  */
 Datum
@@ -41,6 +42,10 @@ sjis_eudc_to_utf8(PG_FUNCTION_ARGS)
 	int			len = PG_GETARG_INT32(4);
 	int			sjis_len;
 	int			clen;
+#if PG_VERSION_NUM >= 140000
+	bool		ignorefail = PG_GETARG_BOOL(5);
+	int			converted = 0;
+#endif
 
 	CHECK_ENCODING_CONVERSION_ARGS(PG_SJIS, PG_UTF8);
 
@@ -69,9 +74,15 @@ sjis_eudc_to_utf8(PG_FUNCTION_ARGS)
 			/* SJIS to UTF8 */
 			if (sjis_len > 0)
 			{
+#if PG_VERSION_NUM >= 140000
+				DirectFunctionCall6(sjis_to_utf8, PG_SJIS, PG_UTF8,
+									CStringGetDatum(p), CStringGetDatum(dest),
+									sjis_len, ignorefail);
+#else
 				DirectFunctionCall5(sjis_to_utf8, PG_SJIS, PG_UTF8,
 									CStringGetDatum(p), CStringGetDatum(dest),
 									sjis_len);
+#endif
 				dest = dest + strlen((char *) dest);
 				p += sjis_len;
 				sjis_len = 0;
@@ -126,15 +137,26 @@ sjis_eudc_to_utf8(PG_FUNCTION_ARGS)
 
 	/* SJIS to UTF8 */
 	if (sjis_len > 0)
+#if PG_VERSION_NUM >= 140000
+		DirectFunctionCall6(sjis_to_utf8, PG_SJIS, PG_UTF8,
+							CStringGetDatum(p), CStringGetDatum(dest),
+							sjis_len, ignorefail);
+#else
 		DirectFunctionCall5(sjis_to_utf8, PG_SJIS, PG_UTF8,
 							CStringGetDatum(p), CStringGetDatum(dest),
 							sjis_len);
+#endif
 
 	if (fallback_character != NULL &&
 		fallback_character != (unsigned char*) eudc_fallback_character)
 		pfree(fallback_character);
 
+#if PG_VERSION_NUM >= 140000
+	converted = p - src + sjis_len;
+	PG_RETURN_INT32(converted);
+#else
 	PG_RETURN_VOID();
+#endif
 }
 
 Datum
@@ -147,6 +169,10 @@ utf8_to_sjis_eudc(PG_FUNCTION_ARGS)
 	int			len = PG_GETARG_INT32(4);
 	int			utf8_len;
 	int			clen;
+#if PG_VERSION_NUM >= 140000
+	bool		ignorefail = PG_GETARG_BOOL(5);
+	int			converted = 0;
+#endif
 
 	CHECK_ENCODING_CONVERSION_ARGS(PG_UTF8, PG_SJIS);
 
@@ -187,9 +213,15 @@ utf8_to_sjis_eudc(PG_FUNCTION_ARGS)
 			/* UTF8 to SJIS */
 			if (utf8_len > 0)
 			{
+#if PG_VERSION_NUM >= 140000
+				DirectFunctionCall6(utf8_to_sjis, PG_UTF8, PG_SJIS,
+									CStringGetDatum(p), CStringGetDatum(dest),
+									utf8_len, ignorefail);
+#else
 				DirectFunctionCall5(utf8_to_sjis, PG_UTF8, PG_SJIS,
 									CStringGetDatum(p), CStringGetDatum(dest),
 									utf8_len);
+#endif
 				dest = dest + strlen((char *) dest);
 				p += utf8_len;
 				utf8_len = 0;
@@ -242,13 +274,24 @@ utf8_to_sjis_eudc(PG_FUNCTION_ARGS)
 
 	/* UTF8 to SJIS */
 	if (utf8_len > 0)
+#if PG_VERSION_NUM >= 140000
+		converted = DirectFunctionCall6(utf8_to_sjis, PG_UTF8, PG_SJIS,
+							CStringGetDatum(p), CStringGetDatum(dest),
+							utf8_len, ignorefail);
+#else
 		DirectFunctionCall5(utf8_to_sjis, PG_UTF8, PG_SJIS,
 							CStringGetDatum(p), CStringGetDatum(dest),
 							utf8_len);
+#endif
 
 	if (fallback_character != NULL &&
 		fallback_character != (unsigned char*) eudc_fallback_character)
 		pfree(fallback_character);
 
+#if PG_VERSION_NUM >= 140000
+	converted = p - src + utf8_len;
+	PG_RETURN_INT32(converted);
+#else
 	PG_RETURN_VOID();
+#endif
 }

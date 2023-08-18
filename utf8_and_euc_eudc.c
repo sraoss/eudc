@@ -43,8 +43,9 @@ pg_euc_mblen(const unsigned char *s)
  *		INTEGER,	-- destination encoding id
  *		CSTRING,	-- source string (null terminated C string)
  *		CSTRING,	-- destination string (null terminated C string)
- *		INTEGER		-- source string length
- * ) returns VOID;
+ *		INTEGER,	-- source string length
+ *		boolean     -- ignore failure (only in V14 and newer)
+ * ) returns int;   -- source string length (void on V13 and older)
  * ----------
  */
 Datum
@@ -57,6 +58,10 @@ euc_jp_eudc_to_utf8(PG_FUNCTION_ARGS)
 	int			len = PG_GETARG_INT32(4);
 	int			euc_jp_len;
 	int			clen;
+#if PG_VERSION_NUM >= 140000
+	bool		ignorefail = PG_GETARG_BOOL(5);
+	int			converted = 0;
+#endif
 
 	CHECK_ENCODING_CONVERSION_ARGS(PG_EUC_JP, PG_UTF8);
 
@@ -90,9 +95,15 @@ euc_jp_eudc_to_utf8(PG_FUNCTION_ARGS)
 			/* EUC_JP to UTF8 */
 			if (euc_jp_len > 0)
 			{
+#if PG_VERSION_NUM >= 140000
+				DirectFunctionCall6(euc_jp_to_utf8, PG_EUC_JP, PG_UTF8,
+									CStringGetDatum(p), CStringGetDatum(dest),
+									euc_jp_len, ignorefail);
+#else
 				DirectFunctionCall5(euc_jp_to_utf8, PG_EUC_JP, PG_UTF8,
 									CStringGetDatum(p), CStringGetDatum(dest),
 									euc_jp_len);
+#endif
 				dest = dest + strlen((char *) dest);
 				p += euc_jp_len;
 				euc_jp_len = 0;
@@ -153,15 +164,26 @@ euc_jp_eudc_to_utf8(PG_FUNCTION_ARGS)
 
 	/* EUC_JP to UTF8 */
 	if (euc_jp_len > 0)
+#if PG_VERSION_NUM >= 140000
+		DirectFunctionCall6(euc_jp_to_utf8, PG_EUC_JP, PG_UTF8,
+							CStringGetDatum(p), CStringGetDatum(dest),
+							euc_jp_len, ignorefail);
+#else
 		DirectFunctionCall5(euc_jp_to_utf8, PG_EUC_JP, PG_UTF8,
 							CStringGetDatum(p), CStringGetDatum(dest),
 							euc_jp_len);
+#endif
 
 	if (fallback_character != NULL &&
 		fallback_character != (unsigned char*) eudc_fallback_character)
 		pfree(fallback_character);
 
+#if PG_VERSION_NUM >= 140000
+	converted = p - src + euc_jp_len;
+	PG_RETURN_INT32(converted);
+#else
 	PG_RETURN_VOID();
+#endif
 }
 
 Datum
@@ -174,6 +196,11 @@ utf8_to_euc_jp_eudc(PG_FUNCTION_ARGS)
 	int			len = PG_GETARG_INT32(4);
 	int			utf8_len;
 	int			clen;
+#if PG_VERSION_NUM >= 140000
+	bool		ignorefail = PG_GETARG_BOOL(5);
+	int			converted = 0;
+#endif
+
 
 	CHECK_ENCODING_CONVERSION_ARGS(PG_UTF8, PG_EUC_JP);
 
@@ -214,9 +241,15 @@ utf8_to_euc_jp_eudc(PG_FUNCTION_ARGS)
 			/* UTF8 to EUC_JP */
 			if (utf8_len > 0)
 			{
+#if PG_VERSION_NUM >= 140000
+				DirectFunctionCall6(utf8_to_euc_jp, PG_UTF8, PG_EUC_JP,
+									CStringGetDatum(p), CStringGetDatum(dest),
+									utf8_len, ignorefail);
+#else
 				DirectFunctionCall5(utf8_to_euc_jp, PG_UTF8, PG_EUC_JP,
 									CStringGetDatum(p), CStringGetDatum(dest),
 									utf8_len);
+#endif
 				dest = dest + strlen((char *) dest);
 				p += utf8_len;
 				utf8_len = 0;
@@ -279,13 +312,24 @@ utf8_to_euc_jp_eudc(PG_FUNCTION_ARGS)
 
 	/* UTF8 to EUC_JP */
 	if (utf8_len > 0)
+#if PG_VERSION_NUM >= 140000
+		converted = DirectFunctionCall6(utf8_to_euc_jp, PG_UTF8, PG_EUC_JP,
+							CStringGetDatum(p), CStringGetDatum(dest),
+							utf8_len, ignorefail);
+#else
 		DirectFunctionCall5(utf8_to_euc_jp, PG_UTF8, PG_EUC_JP,
 							CStringGetDatum(p), CStringGetDatum(dest),
 							utf8_len);
+#endif
 
 	if (fallback_character != NULL &&
 		fallback_character != (unsigned char*) eudc_fallback_character)
 		pfree(fallback_character);
 
+#if PG_VERSION_NUM >= 140000
+	converted = p - src + utf8_len;
+	PG_RETURN_INT32(converted);
+#else
 	PG_RETURN_VOID();
+#endif
 }
