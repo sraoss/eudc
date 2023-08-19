@@ -7,23 +7,23 @@ $$;
 
 -- SJIS_EUDC --> UTF8
 CREATE FUNCTION pg_catalog.sjis_eudc_to_utf8 
-  (integer, integer, cstring, internal, integer, boolean)
-  RETURNS integer AS '$libdir/eudc', 'sjis_eudc_to_utf8' LANGUAGE C STRICT;
+  (integer, integer, cstring, internal, integer)
+  RETURNS void AS '$libdir/eudc', 'sjis_eudc_to_utf8' LANGUAGE C STRICT;
 
 -- UTF8 --> SJIS_EUDC
 CREATE FUNCTION pg_catalog.utf8_to_sjis_eudc 
-  (integer, integer, cstring, internal, integer, boolean)
-  RETURNS integer AS '$libdir/eudc', 'utf8_to_sjis_eudc' LANGUAGE C STRICT;
+  (integer, integer, cstring, internal, integer)
+  RETURNS void AS '$libdir/eudc', 'utf8_to_sjis_eudc' LANGUAGE C STRICT;
 
 -- EUC_JP_EUDC --> UTF8
 CREATE FUNCTION pg_catalog.euc_jp_eudc_to_utf8 
-  (integer, integer, cstring, internal, integer, boolean)
-  RETURNS integer AS '$libdir/eudc', 'euc_jp_eudc_to_utf8' LANGUAGE C STRICT;
+  (integer, integer, cstring, internal, integer)
+  RETURNS void AS '$libdir/eudc', 'euc_jp_eudc_to_utf8' LANGUAGE C STRICT;
 
 -- UTF8 --> EUC_JP_EUDC
 CREATE FUNCTION pg_catalog.utf8_to_euc_jp_eudc 
-  (integer, integer, cstring, internal, integer, boolean)
-  RETURNS integer AS '$libdir/eudc', 'utf8_to_euc_jp_eudc' LANGUAGE C STRICT;
+  (integer, integer, cstring, internal, integer)
+  RETURNS void AS '$libdir/eudc', 'utf8_to_euc_jp_eudc' LANGUAGE C STRICT;
 
 -- To show eudc function information
 CREATE OR REPLACE FUNCTION pg_catalog.show_eudc(OUT "Conversion Function" varchar,

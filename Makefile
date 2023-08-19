@@ -44,12 +44,12 @@ MAJORVERSION := $(basename $(VERSION))
 endif
 
 lib/eudc--2.0.sql: lib/eudc--2.0.sql.in
-	(test $(MAJORVERSION) -lt 14 && sed -e 's/RETURN_TYPE/void/g' lib/eudc--2.0.sql.in > lib/eudc--2.0.sql) || \
-	test $(MAJORVERSION) -ge 14 && sed -e 's/RETURN_TYPE/int/g' lib/eudc--2.0.sql.in > lib/eudc--2.0.sql
+	(test $(MAJORVERSION) -lt 14 && cp lib/eudc--2.0.sql.pg13.in lib/eudc--2.0.sql) || \
+	(test $(MAJORVERSION) -ge 14 && cp lib/eudc--2.0.sql.in lib/eudc--2.0.sql)
 
 eudc.sql: eudc.sql.in
-	(test $(MAJORVERSION) -lt 14 && sed -e 's/RETURN_TYPE/void/g' eudc.sql.in > eudc.sql) || \
-	test $(MAJORVERSION) -ge 14 && sed -e 's/RETURN_TYPE/int/g' eudc.sql.in > eudc.sql
+	(test $(MAJORVERSION) -lt 14 && cp eudc.sql.pg13.in eudc.sql) || \
+	(test $(MAJORVERSION) -ge 14 && cp eudc.sql.in eudc.sql)
 
 expected/conv.out: expected/conv-$(MAJORVERSION).out
 	cp expected/conv-$(MAJORVERSION).out expected/conv.out
