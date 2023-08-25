@@ -15,11 +15,8 @@
 static PGFunction euc_jp_to_utf8 = NULL;
 static PGFunction utf8_to_euc_jp = NULL;
 
-PG_FUNCTION_INFO_V1(euc_jp_eudc_to_utf8);
-PG_FUNCTION_INFO_V1(utf8_to_euc_jp_eudc);
-
-extern Datum PGDLLEXPORT euc_jp_eudc_to_utf8(PG_FUNCTION_ARGS);
-extern Datum PGDLLEXPORT utf8_to_euc_jp_eudc(PG_FUNCTION_ARGS);
+PGDLLEXPORT PG_FUNCTION_INFO_V1(euc_jp_eudc_to_utf8);
+PGDLLEXPORT PG_FUNCTION_INFO_V1(utf8_to_euc_jp_eudc);
 
 static inline int
 pg_euc_mblen(const unsigned char *s)

@@ -15,10 +15,7 @@
 	    "FROM pg_conversion \n" \
 	    "WHERE conproc::text like '%eudc%'"
 
-/*  Prototypes to prevent potential gcc warnings. */
-Datum show_eudc(PG_FUNCTION_ARGS);
-
-PG_FUNCTION_INFO_V1(show_eudc);
+PGDLLEXPORT PG_FUNCTION_INFO_V1(show_eudc);
 
 Datum
 show_eudc(PG_FUNCTION_ARGS)

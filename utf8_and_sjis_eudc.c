@@ -15,11 +15,8 @@
 static PGFunction sjis_to_utf8 = NULL;
 static PGFunction utf8_to_sjis = NULL;
 
-PG_FUNCTION_INFO_V1(sjis_eudc_to_utf8);
-PG_FUNCTION_INFO_V1(utf8_to_sjis_eudc);
-
-extern Datum PGDLLEXPORT sjis_eudc_to_utf8(PG_FUNCTION_ARGS);
-extern Datum PGDLLEXPORT utf8_to_sjis_eudc(PG_FUNCTION_ARGS);
+PGDLLEXPORT PG_FUNCTION_INFO_V1(sjis_eudc_to_utf8);
+PGDLLEXPORT PG_FUNCTION_INFO_V1(utf8_to_sjis_eudc);
 
 /* ----------
  * conv_proc(
