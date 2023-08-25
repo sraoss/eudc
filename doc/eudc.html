@@ -74,12 +74,12 @@ $ make install
 
 <p>eudc用の関数をデータベースに登録します。</p>
 <pre>
-$ psql -f $POSTGRES/share/contrib/eudc.sql <database_name>
+$ psql -f $POSTGRES/share/contrib/eudc.sql {database_name}
 </pre>
 <p>アンインストール時は、uninstall_eudc.sqlを同様の手順で実行してください。</p>
 <p>CREATE EXTENSION文を用いた登録も可能です。いずれの場合も、DBスーパーユーザにて実行してください。</p>
 <pre>
-$ psql -Upostgres <database_name>
+$ psql -U postgres {database_name}
 database_name=# CREATE EXTENSION eudc;
 </pre>
 <p style="color:red">注意</p>
@@ -164,16 +164,6 @@ eudc バージョン 2.0 以降は バージョン 1.x までとは拡張の構�
 <hr />
 <div class="navigation"><a href="index-ja.html">Top</a> &gt; <a href="eudc.html">eudc</a><div>
 <p class="footer">Copyright (c) 2014, NIPPON TELEGRAPH AND TELEPHONE CORPORATION</p>
-<p class="footer">Copyright (c) 2022, SRA OSS LLC</p>
-
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-10244036-3");
-pageTracker._trackPageview();
-} catch(err) {}</script>
+<p class="footer">Copyright (c) 2023, SRA OSS LLC</p>
 </body>
 </html>
