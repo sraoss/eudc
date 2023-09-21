@@ -69,6 +69,9 @@ expected/conv-14.out:
 expected/conv-15.out:
 	cp expected/conv-extension.out expected/conv-15.out
 
+expected/conv-16.out:
+	cp expected/conv-extension.out expected/conv-16.out
+
 .PHONY: subclean
 clean: subclean
 
