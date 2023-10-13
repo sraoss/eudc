@@ -78,6 +78,15 @@ euc_jp_eudc_to_utf8(PG_FUNCTION_ARGS)
 
 		clen = pg_euc_mblen(c);
 
+		/* invalid code check for eudc region */
+		if ((clen == 2 && 0xf5 <= c[0] && c[0] <= 0xfe &&
+			(c[1] < 0xa1 || 0xfe < c[1])) ||
+			(clen == 3 && c[0] == 0x8f && 0xf5 <= c[1] && c[1] <= 0xfe &&
+			(c[2] < 0xa1 || 0xfe < c[2])))
+		{
+			report_invalid_encoding(PG_EUC_JP, (const char *) c, len);
+		}
+
 		if ((clen == 2 &&
 			 0xf5 <= c[0] && c[0] <= 0xfe &&
 			 0xa1 <= c[1] && c[1] <= 0xfe) ||
