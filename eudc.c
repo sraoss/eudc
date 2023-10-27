@@ -35,7 +35,15 @@ int		eudc_log_level = DEBUG2;
 
 extern void PGDLLEXPORT _PG_init(void);
 
-#if PG_VERSION_NUM >= 90100
+#if PG_VERSION_NUM >= 140000
+static bool eudc_fallback_character_check_hook(
+	const char **newval, void** extra, GucSource source);
+
+static void eudc_fallback_character_assign_hook(
+	const char *newval, void* extra);
+
+
+#elif PG_VERSION_NUM >= 90100
 static bool eudc_fallback_character_check_hook(
 	const char **newval, void** extra, GucSource source);
 
@@ -92,12 +100,21 @@ _PG_init(void)
 
 #if PG_VERSION_NUM >= 90100
 
+#if PG_VERSION_NUM >= 140000
+static void
+eudc_fallback_character_assign_hook(
+	const char *newval, void* extra)
+{
+	return;
+}
+#else
 static const char *
 eudc_fallback_character_assign_hook(
 	const char *newval, void* extra)
 {
 	return newval;
 }
+#endif
 
 static bool eudc_fallback_character_check_hook(
 	const char **newval, void** extra, GucSource source)

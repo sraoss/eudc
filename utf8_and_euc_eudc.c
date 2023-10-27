@@ -114,7 +114,11 @@ euc_jp_eudc_to_utf8(PG_FUNCTION_ARGS)
 			/* EUC_JP to UTF8 */
 			if (euc_jp_len > 0)
 			{
-#if PG_VERSION_NUM >= 140000
+#if PG_VERSION_NUM >= 160000
+				DirectFunctionCall6(euc_jp_to_utf8, PG_EUC_JP, PG_UTF8,
+									CStringGetDatum((char*)p), CStringGetDatum((char*)dest),
+									euc_jp_len, ignorefail);
+#elif PG_VERSION_NUM >= 140000
 				DirectFunctionCall6(euc_jp_to_utf8, PG_EUC_JP, PG_UTF8,
 									CStringGetDatum(p), CStringGetDatum(dest),
 									euc_jp_len, ignorefail);
@@ -183,7 +187,11 @@ euc_jp_eudc_to_utf8(PG_FUNCTION_ARGS)
 
 	/* EUC_JP to UTF8 */
 	if (euc_jp_len > 0)
-#if PG_VERSION_NUM >= 140000
+#if PG_VERSION_NUM >= 160000
+		DirectFunctionCall6(euc_jp_to_utf8, PG_EUC_JP, PG_UTF8,
+							CStringGetDatum((char*)p), CStringGetDatum((char*)dest),
+							euc_jp_len, ignorefail);
+#elif PG_VERSION_NUM >= 140000
 		DirectFunctionCall6(euc_jp_to_utf8, PG_EUC_JP, PG_UTF8,
 							CStringGetDatum(p), CStringGetDatum(dest),
 							euc_jp_len, ignorefail);
@@ -260,7 +268,11 @@ utf8_to_euc_jp_eudc(PG_FUNCTION_ARGS)
 			/* UTF8 to EUC_JP */
 			if (utf8_len > 0)
 			{
-#if PG_VERSION_NUM >= 140000
+#if PG_VERSION_NUM >= 160000
+				DirectFunctionCall6(utf8_to_euc_jp, PG_UTF8, PG_EUC_JP,
+									CStringGetDatum((char*)p), CStringGetDatum((char*)dest),
+									utf8_len, ignorefail);
+#elif PG_VERSION_NUM >= 140000
 				DirectFunctionCall6(utf8_to_euc_jp, PG_UTF8, PG_EUC_JP,
 									CStringGetDatum(p), CStringGetDatum(dest),
 									utf8_len, ignorefail);
@@ -331,7 +343,11 @@ utf8_to_euc_jp_eudc(PG_FUNCTION_ARGS)
 
 	/* UTF8 to EUC_JP */
 	if (utf8_len > 0)
-#if PG_VERSION_NUM >= 140000
+#if PG_VERSION_NUM >= 160000
+		DirectFunctionCall6(utf8_to_euc_jp, PG_UTF8, PG_EUC_JP,
+							CStringGetDatum((char*)p), CStringGetDatum((char*)dest),
+							utf8_len, ignorefail);
+#elif PG_VERSION_NUM >= 140000
 		DirectFunctionCall6(utf8_to_euc_jp, PG_UTF8, PG_EUC_JP,
 							CStringGetDatum(p), CStringGetDatum(dest),
 							utf8_len, ignorefail);

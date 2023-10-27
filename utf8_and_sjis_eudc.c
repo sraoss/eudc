@@ -71,7 +71,11 @@ sjis_eudc_to_utf8(PG_FUNCTION_ARGS)
 			/* SJIS to UTF8 */
 			if (sjis_len > 0)
 			{
-#if PG_VERSION_NUM >= 140000
+#if PG_VERSION_NUM >= 160000
+				DirectFunctionCall6(sjis_to_utf8, PG_SJIS, PG_UTF8,
+									CStringGetDatum((char*)p), CStringGetDatum((char*)dest),
+									sjis_len, ignorefail);
+#elif PG_VERSION_NUM >= 140000
 				DirectFunctionCall6(sjis_to_utf8, PG_SJIS, PG_UTF8,
 									CStringGetDatum(p), CStringGetDatum(dest),
 									sjis_len, ignorefail);
@@ -134,7 +138,11 @@ sjis_eudc_to_utf8(PG_FUNCTION_ARGS)
 
 	/* SJIS to UTF8 */
 	if (sjis_len > 0)
-#if PG_VERSION_NUM >= 140000
+#if PG_VERSION_NUM >= 160000
+		DirectFunctionCall6(sjis_to_utf8, PG_SJIS, PG_UTF8,
+							CStringGetDatum((char*)p), CStringGetDatum((char*)dest),
+							sjis_len, ignorefail);
+#elif PG_VERSION_NUM >= 140000
 		DirectFunctionCall6(sjis_to_utf8, PG_SJIS, PG_UTF8,
 							CStringGetDatum(p), CStringGetDatum(dest),
 							sjis_len, ignorefail);
@@ -210,7 +218,11 @@ utf8_to_sjis_eudc(PG_FUNCTION_ARGS)
 			/* UTF8 to SJIS */
 			if (utf8_len > 0)
 			{
-#if PG_VERSION_NUM >= 140000
+#if PG_VERSION_NUM >= 160000
+				DirectFunctionCall6(utf8_to_sjis, PG_UTF8, PG_SJIS,
+									CStringGetDatum((char*)p), CStringGetDatum((char*)dest),
+									utf8_len, ignorefail);
+#elif PG_VERSION_NUM >= 140000
 				DirectFunctionCall6(utf8_to_sjis, PG_UTF8, PG_SJIS,
 									CStringGetDatum(p), CStringGetDatum(dest),
 									utf8_len, ignorefail);
@@ -271,7 +283,11 @@ utf8_to_sjis_eudc(PG_FUNCTION_ARGS)
 
 	/* UTF8 to SJIS */
 	if (utf8_len > 0)
-#if PG_VERSION_NUM >= 140000
+#if PG_VERSION_NUM >= 160000
+		DirectFunctionCall6(utf8_to_sjis, PG_UTF8, PG_SJIS,
+							CStringGetDatum((char*)p), CStringGetDatum((char*)dest),
+							utf8_len, ignorefail);
+#elif PG_VERSION_NUM >= 140000
 		DirectFunctionCall6(utf8_to_sjis, PG_UTF8, PG_SJIS,
 							CStringGetDatum(p), CStringGetDatum(dest),
 							utf8_len, ignorefail);
