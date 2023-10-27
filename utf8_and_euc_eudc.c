@@ -78,11 +78,24 @@ euc_jp_eudc_to_utf8(PG_FUNCTION_ARGS)
 
 		clen = pg_euc_mblen(c);
 
-		/* invalid code check for eudc region */
+		/* invalid code check for EUC_JP including eudc region */
 		if ((clen == 2 && 0xf5 <= c[0] && c[0] <= 0xfe &&
-			(c[1] < 0xa1 || 0xfe < c[1])) ||
+				(c[1] < 0xa1 || 0xfe < c[1])) ||
 			(clen == 3 && c[0] == 0x8f && 0xf5 <= c[1] && c[1] <= 0xfe &&
-			(c[2] < 0xa1 || 0xfe < c[2])))
+				(c[2] < 0xa1 || 0xfe < c[2])) ||
+			(clen == 2 && c[0] == 0x8e && (c[1] < 0xa1 || 0xdf < c[1])) ||
+            (clen == 2 && 0xa1 <= c[0]  && c[0] <= 0xa8 &&
+				(c[1] < 0xa1 || 0xfe < c[1])) ||
+            (clen == 2 && c[0] == 0xad && (c[1] < 0xa1 || 0xfe < c[1])) ||
+            (clen == 2 && 0xb0 <= c[0] && c[0] <= 0xf4 &&
+				(c[1] < 0xa1 || 0xfe < c[1])) ||
+            (clen == 2 && 0xf9 <= c[0] && c[0] <= 0xfc &&
+				(c[1] < 0xa1 || 0xfe < c[1])) ||
+			(clen == 3 && c[0] == 0x8f && (! ((0xa1 <= c[1] && c[1] <= 0xab) ||
+				(0xb0 <= c[1] && c[1] <= 0xed) || (0xf3 <= c[1] && c[1] <= 0xfe)))) ||
+			(clen == 3 && c[0] == 0x8f && ((0xa1 <= c[1] && c[1] <= 0xab) ||
+				(0xb0 <= c[1] && c[1] <= 0xed) || (0xf3 <= c[1] && c[1] <= 0xfe)) &&
+				(c[2] < 0xa1 || c[2] > 0xfe)))
 		{
 			report_invalid_encoding(PG_EUC_JP, (const char *) c, len);
 		}
