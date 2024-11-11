@@ -72,10 +72,14 @@ expected/conv-15.out:
 expected/conv-16.out:
 	cp expected/conv-extension.out expected/conv-16.out
 
+expected/conv-17.out:
+	cp expected/conv-extension.out expected/conv-17.out
+
 .PHONY: subclean
 clean: subclean
 
 subclean:
-	rm -f expected/conv.out expected/conv-{11,12,13,14,15}.out
+	rm -f expected/conv.out expected/conv-{11,12,13,14,15,16,17}.out
 
 installcheck: expected/conv.out
+

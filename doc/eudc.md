@@ -115,7 +115,7 @@ eudc.log_level = warning
 
 <dl>
 <dt>PostgreSQLバージョン</dt>
-<dd>PostgreSQL 11, 12, 13, 14, 15, 16</dd>
+<dd>PostgreSQL 11, 12, 13, 14, 15, 16, 17</dd>
 </dl>
 
 ## バージョン2.0について
@@ -128,4 +128,5 @@ eudc バージョン 2.0 以降は バージョン 1.x までとは拡張の構�
 
 Copyright (c) 2014, NIPPON TELEGRAPH AND TELEPHONE CORPORATION
 
-Copyright (c) 2023, SRA OSS LLC
+Copyright (c) 2024, SRA OSS K.K.
+
