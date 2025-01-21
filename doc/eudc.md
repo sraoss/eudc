@@ -39,13 +39,37 @@ database_name=# CREATE EXTENSION eudc;
 
 ### 注意
 
-CREATE EXTENSION にて登録して、それをアンインストールする際に DROP EXTENSION の前に SELECT disable\_eudc(); を忘れずに実行してください。
+CREATE EXTENSION で登録して、それをアンインストールする際に DROP EXTENSION の前に SELECT disable\_eudc(); を忘れずに実行してください。
 元々の文字コード変換関数がデフォルト設定に戻らないため暗黙的な文字コード変換が行われなくなってしまいます。
 
 ~~~console
 database_name=# SELECT disable_eudc(); DROP EXTENSION eudc;
 ~~~
 
+以下のようなイベントトリガを作ることで、DROP EXTENSION eudc の後に自動的に SELECT disable\_eudc() と同様の処理を実行させる方法も考えられます。
+
+
+~~~
+CREATE FUNCTION pg_catalog.trgf_disable_eudc()
+  RETURNS event_trigger LANGUAGE plpgsql AS
+$$
+DECLARE obj RECORD;
+BEGIN
+  FOR obj IN SELECT * FROM pg_event_trigger_dropped_objects() LOOP
+    IF tg_tag = 'DROP EXTENSION' AND obj.object_identity = 'eudc' THEN
+      UPDATE pg_conversion SET condefault = TRUE WHERE conname IN
+        ('sjis_to_utf8', 'utf8_to_sjis', 'euc_jp_to_utf8', 'utf8_to_euc_jp');
+      EXIT;
+    END IF;
+  END LOOP;
+END;
+$$;
+
+CREATE EVENT TRIGGER evt_drop_eudc ON sql_drop
+  EXECUTE FUNCTION pg_catalog.trgf_disable_eudc();
+~~~
+
+これを導入することは全ての DROP文に対するオーバーヘッドになるため、このコードは eudc拡張自体には含めていません。
 
 
 ## 関数
