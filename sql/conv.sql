@@ -60,3 +60,4 @@ SELECT * FROM sjis AS s FULL JOIN euc_jp AS e ON s.utf8 = e.utf8
 -- error cases
 SELECT encode(convert(decode('ee9d98', 'hex'), 'UTF8', 'SJIS'), 'hex');
 SELECT encode(convert(decode('ee9d98', 'hex'), 'UTF8', 'EUC_JP'), 'hex');
+SELECT encode(convert(decode('a460', 'hex'), 'EUC_JP', 'UTF8'), 'hex');
