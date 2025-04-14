@@ -61,3 +61,15 @@ SELECT * FROM sjis AS s FULL JOIN euc_jp AS e ON s.utf8 = e.utf8
 SELECT encode(convert(decode('ee9d98', 'hex'), 'UTF8', 'SJIS'), 'hex');
 SELECT encode(convert(decode('ee9d98', 'hex'), 'UTF8', 'EUC_JP'), 'hex');
 SELECT encode(convert(decode('a460', 'hex'), 'EUC_JP', 'UTF8'), 'hex');
+
+-- full test
+\! data/testdata_gen.pl SJIS SQL > data/sjis.out.sql
+\! psql -d contrib_regression -f data/sjis.out.sql > /dev/null
+\! rm data/sjis.out.sql
+\! data/testdata_gen.pl EUC_JP SQL > data/euc_jp.out.sql
+\! psql -d contrib_regression -f data/euc_jp.out.sql > /dev/null
+\! rm data/euc_jp.out.sql
+\! data/testdata_gen.pl EUC_JP3 SQL > data/euc_jp3.out.sql
+\! psql -d contrib_regression -f data/euc_jp3.out.sql > /dev/null
+\! rm data/euc_jp3.out.sql
+
