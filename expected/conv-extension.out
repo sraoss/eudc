@@ -114,3 +114,13 @@ SELECT encode(convert(decode('ee9d98', 'hex'), 'UTF8', 'EUC_JP'), 'hex');
 ERROR:  character with byte sequence 0xee 0x9d 0x98 in encoding "UTF8" has no equivalent in encoding "EUC_JP"
 SELECT encode(convert(decode('a460', 'hex'), 'EUC_JP', 'UTF8'), 'hex');
 ERROR:  invalid byte sequence for encoding "EUC_JP": 0xa4 0x60
+-- full test
+\! data/testdata_gen.pl SJIS SQL > data/sjis.out.sql
+\! psql -d contrib_regression -f data/sjis.out.sql > /dev/null
+\! rm data/sjis.out.sql
+\! data/testdata_gen.pl EUC_JP SQL > data/euc_jp.out.sql
+\! psql -d contrib_regression -f data/euc_jp.out.sql > /dev/null
+\! rm data/euc_jp.out.sql
+\! data/testdata_gen.pl EUC_JP3 SQL > data/euc_jp3.out.sql
+\! psql -d contrib_regression -f data/euc_jp3.out.sql > /dev/null
+\! rm data/euc_jp3.out.sql
