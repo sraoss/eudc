@@ -66,7 +66,7 @@ _PG_init(void)
 							   "Character used for EUDC. Or, use linear mapping when empty.",
 							   NULL,
 							   &eudc_fallback_character,
-							   NULL,
+							   "",
 							   PGC_USERSET,
 							   0,
 #if PG_VERSION_NUM >= 90100
